@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Museo Virtual de la Edad Media | Curador Medieval</title>
+  <meta name="description"
+    content="Museo Virtual Interactivo de la Edad Media para estudiantes de Grado 7º. Explora el feudalismo, las cruzadas y más.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* === RESET & BASE === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    :root {
+      --gold: #d4a843;
+      --gold-light: #f0d78c;
+      --purple: #6b3fa0;
+      --purple-dark: #2d1b4e;
+      --bg-dark: #0a0a1a;
+      --bg-card: rgba(255, 255, 255, 0.07);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --text: #e8e0d4;
+      --text-muted: rgba(232, 224, 212, 0.6);
+      --success: #4ecdc4;
+      --error: #ff6b6b;
+      --font-display: 'Cinzel Decorative', serif;
+      --font-heading: 'Cinzel', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(107, 63, 160, 0.15), transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(212, 168, 67, 0.1), transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(45, 27, 78, 0.3), transparent 60%);
+      pointer-events: none;
+      z-index: 0
+    }
+
+    /* === GLASSMORPHISM === */
+    .glass {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3)
+    }
+
+    .glass-strong {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4)
+    }
+
+    /* === PARTICLES BG === */
+    #particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none
+    }
+
+    /* === SCREENS === */
+    .screen {
+      display: none;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center
+    }
+
+    /* === WELCOME === */
+    #welcome {
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px
+    }
+
+    #welcome .museum-gate {
+      max-width: 700px;
+      padding: 50px 40px
+    }
+
+    #welcome h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 5vw, 2.8rem);
+      color: var(--gold);
+      margin-bottom: 10px;
+      text-shadow: 0 0 30px rgba(212, 168, 67, 0.3)
+    }
+
+    #welcome .subtitle {
+      font-family: var(--font-heading);
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      color: var(--gold-light);
+      margin-bottom: 25px;
+      opacity: 0.8
+    }
+
+    #welcome .intro {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      line-height: 1.8
+    }
+
+    #welcome .dba-badge {
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 30px;
+      background: rgba(107, 63, 160, 0.3);
+      border: 1px solid rgba(107, 63, 160, 0.5);
+      font-size: 0.75rem;
+      color: var(--gold-light);
+      margin-bottom: 25px
+    }
+
+    .btn {
+      font-family: var(--font-heading);
+      padding: 14px 36px;
+      border: 2px solid var(--gold);
+      background: linear-gradient(135deg, rgba(212, 168, 67, 0.2), rgba(107, 63, 160, 0.2));
+      color: var(--gold);
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, rgba(212, 168, 67, 0.4), rgba(107, 63, 160, 0.4));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(212, 168, 67, 0.3)
+    }
+
+    .btn-sm {
+      padding: 10px 24px;
+      font-size: 0.85rem
+    }
+
+    .btn-success {
+      border-color: var(--success);
+      color: var(--success);
+      background: linear-gradient(135deg, rgba(78, 205, 196, 0.15), rgba(78, 205, 196, 0.05))
+    }
+
+    /* === HUB === */
+    #hub {
+      padding: 30px 20px
+    }
+
+    #hub .hub-header {
+      text-align: center;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 900px
+    }
+
+    #hub .hub-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 4vw, 2rem);
+      color: var(--gold)
+    }
+
+    #hub .progress-bar {
+      width: 100%;
+      max-width: 500px;
+      height: 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 15px auto;
+      overflow: hidden
+    }
+
+    #hub .progress-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--purple), var(--gold));
+      transition: width 0.6s ease;
+      width: 0%
+    }
+
+    #hub .progress-text {
+      font-size: 0.85rem;
+      color: var(--text-muted)
+    }
+
+    .galleries-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 900px
+    }
+
+    .gallery-card {
+      padding: 28px 24px;
+      cursor: pointer;
+      transition: all 0.4s;
+      position: relative;
+      overflow: hidden;
+      text-align: center
+    }
+
+    .gallery-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(212, 168, 67, 0.15)
+    }
+
+    .gallery-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed
+    }
+
+    .gallery-card.completed {
+      border-color: var(--success)
+    }
+
+    .gallery-card .g-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px
+    }
+
+    .gallery-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      color: var(--gold);
+      margin-bottom: 8px
+    }
+
+    .gallery-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted)
+    }
+
+    .gallery-card .status-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 20px
+    }
+
+    .status-badge.locked-b {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted)
+    }
+
+    .status-badge.open-b {
+      background: rgba(212, 168, 67, 0.2);
+      color: var(--gold)
+    }
+
+    .status-badge.done-b {
+      background: rgba(78, 205, 196, 0.2);
+      color: var(--success)
+    }
+
+    /* === GALLERY SCREEN === */
+    #gallery-view {
+      padding: 30px 20px
+    }
+
+    #gallery-view .gv-header {
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 800px
+    }
+
+    #gallery-view .gv-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.1rem, 3.5vw, 1.7rem);
+      color: var(--gold);
+      margin-bottom: 8px
+    }
+
+    #gallery-view .gv-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem
+    }
+
+    .gv-content {
+      width: 100%;
+      max-width: 800px
+    }
+
+    .info-panel {
+      padding: 24px;
+      margin-bottom: 24px;
+      line-height: 1.8
+    }
+
+    .info-panel h3 {
+      font-family: var(--font-heading);
+      color: var(--gold);
+      margin-bottom: 12px;
+      font-size: 1.1rem
+    }
+
+    .info-panel p,
+    .info-panel li {
+      font-size: 0.9rem;
+      color: var(--text)
+    }
+
+    .info-panel ul {
+      list-style: none;
+      padding-left: 0
+    }
+
+    .info-panel li {
+      padding: 4px 0;
+      padding-left: 20px;
+      position: relative
+    }
+
+    .info-panel li::before {
+      content: '⚜';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 0.7rem
+    }
+
+    /* === EXHIBIT BLOCKS (imagen + texto) === */
+    .exhibit-block {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.15)
+    }
+
+    .exhibit-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0
+    }
+
+    .exhibit-block.reverse {
+      grid-template-columns: 1fr 280px
+    }
+
+    .exhibit-block.reverse .exhibit-img-wrap {
+      order: 2
+    }
+
+    .exhibit-block.reverse .exhibit-text {
+      order: 1
+    }
+
+    /* Imagen tipo cuadro de museo */
+    .exhibit-img-wrap {
+      position: relative;
+      flex-shrink: 0
+    }
+
+    .exhibit-img-frame {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 3px rgba(212, 168, 67, 0.6),
+        0 0 0 6px rgba(107, 63, 160, 0.3),
+        0 8px 32px rgba(0, 0, 0, 0.6);
+      transition: box-shadow 0.4s, transform 0.4s;
+      cursor: pointer
+    }
+
+    .exhibit-img-frame:hover {
+      box-shadow:
+        0 0 0 3px var(--gold),
+        0 0 0 8px rgba(212, 168, 67, 0.25),
+        0 0 40px rgba(212, 168, 67, 0.2),
+        0 12px 40px rgba(0, 0, 0, 0.7);
+      transform: scale(1.02)
+    }
+
+    .exhibit-img-frame img {
+      width: 100%;
+      display: block;
+      border-radius: 6px;
+      filter: brightness(0.95) saturate(1.05)
+    }
+
+    /* Overlay leyenda al hover */
+    .exhibit-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10, 10, 26, 0.92) 0%, rgba(10, 10, 26, 0.4) 50%, transparent 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+      opacity: 0;
+      transition: opacity 0.4s
+    }
+
+    .exhibit-img-frame:hover .exhibit-img-overlay {
+      opacity: 1
+    }
+
+    .exhibit-img-caption {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      color: var(--gold-light);
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8)
+    }
+
+    /* Cédula de museo debajo de la imagen */
+    .exhibit-cedula {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(212, 168, 67, 0.07);
+      border: 1px solid rgba(212, 168, 67, 0.2);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      line-height: 1.4
+    }
+
+    /* Texto lateral */
+    .exhibit-text h3 {
+      font-family: var(--font-heading);
+      color: var(--gold);
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.25)
+    }
+
+    .exhibit-text p {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 10px
+    }
+
+    .exhibit-text ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 6px
+    }
+
+    .exhibit-text li {
+      padding: 5px 0 5px 22px;
+      position: relative;
+      font-size: 0.87rem;
+      color: var(--text);
+      line-height: 1.6
+    }
+
+    .exhibit-text li::before {
+      content: '⚜';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 0.7rem;
+      top: 7px
+    }
+
+    /* Animación de entrada */
+    .exhibit-block {
+      animation: fadeInUp 0.6s ease both
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .exhibit-block:nth-child(1) {
+      animation-delay: 0.05s
+    }
+
+    .exhibit-block:nth-child(2) {
+      animation-delay: 0.15s
+    }
+
+    .exhibit-block:nth-child(3) {
+      animation-delay: 0.25s
+    }
+
+    .exhibit-block:nth-child(4) {
+      animation-delay: 0.35s
+    }
+
+    /* Responsive */
+    @media(max-width: 680px) {
+
+      .exhibit-block,
+      .exhibit-block.reverse {
+        grid-template-columns: 1fr
+      }
+
+      .exhibit-block.reverse .exhibit-img-wrap,
+      .exhibit-block.reverse .exhibit-text {
+        order: unset
+      }
+
+      .exhibit-img-overlay {
+        opacity: 1
+      }
+    }
+
+    /* === MULTIPLE GAMES MENU === */
+    .games-menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: center
+    }
+
+    .game-tab {
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: var(--font-heading);
+      transition: all 0.3s
+    }
+
+    .game-tab:hover {
+      background: rgba(212, 168, 67, 0.1);
+      border-color: var(--gold)
+    }
+
+    .game-tab.active {
+      background: rgba(212, 168, 67, 0.2);
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 15px rgba(212, 168, 67, 0.2)
+    }
+
+    .game-tab.done {
+      border-color: var(--success);
+      color: var(--success)
+    }
+
+    /* === GAME AREAS === */
+    .game-area {
+      padding: 24px;
+      margin-bottom: 24px
+    }
+
+    .game-area h3 {
+      font-family: var(--font-heading);
+      color: var(--gold);
+      margin-bottom: 16px;
+      font-size: 1rem;
+      text-align: center
+    }
+
+    .game-instruction {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(107, 63, 160, 0.15);
+      border: 1px solid rgba(107, 63, 160, 0.3)
+    }
+
+    /* Games Generics */
+    .items-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px
+    }
+
+    .interactive-item {
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(212, 168, 67, 0.1);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+      text-align: center
+    }
+
+    .interactive-item:hover {
+      background: rgba(212, 168, 67, 0.2);
+      transform: scale(1.03)
+    }
+
+    .interactive-item.selected {
+      background: var(--gold);
+      color: var(--bg-dark);
+      font-weight: bold
+    }
+
+    .interactive-item.correct {
+      background: rgba(78, 205, 196, 0.2);
+      border-color: var(--success);
+      color: var(--success);
+      pointer-events: none
+    }
+
+    .interactive-item.incorrect {
+      background: rgba(255, 107, 107, 0.2);
+      border-color: var(--error);
+      color: var(--error);
+      animation: shake 0.4s
+    }
+
+    /* Drag & Drop */
+    .drag-item {
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: rgba(212, 168, 67, 0.15);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      cursor: grab;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+      user-select: none;
+      touch-action: none
+    }
+
+    .drag-item:active {
+      cursor: grabbing;
+      transform: scale(1.05)
+    }
+
+    .drag-item.placed {
+      opacity: 0.4;
+      cursor: default;
+      pointer-events: none
+    }
+
+    .drop-zones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .drop-zone {
+      min-height: 140px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      text-align: center;
+      transition: all 0.3s
+    }
+
+    .drop-zone h4 {
+      font-family: var(--font-heading);
+      color: var(--gold-light);
+      margin-bottom: 10px;
+      font-size: 0.9rem
+    }
+
+    .drop-zone.drag-over {
+      border-color: var(--gold);
+      background: rgba(212, 168, 67, 0.1)
+    }
+
+    .drop-zone .dropped-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center
+    }
+
+    .dropped-tag {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      background: rgba(78, 205, 196, 0.15);
+      border: 1px solid rgba(78, 205, 196, 0.3);
+      color: var(--success)
+    }
+
+    .dropped-tag.wrong {
+      background: rgba(255, 107, 107, 0.15);
+      border-color: rgba(255, 107, 107, 0.3);
+      color: var(--error)
+    }
+
+    /* Match */
+    .match-game {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: start
+    }
+
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    /* Quiz & T/F */
+    .quiz-question {
+      margin-bottom: 20px
+    }
+
+    .quiz-question p {
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+      font-weight: 500;
+      text-align: center
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .tf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 400px;
+      margin: 0 auto
+    }
+
+    /* Timeline / Sort */
+    .sort-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .sort-item {
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      cursor: grab;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      user-select: none;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .sort-item .sort-handle {
+      color: var(--gold);
+      font-size: 0.9rem
+    }
+
+    .sort-item.dragging {
+      opacity: 0.5;
+      border-color: var(--gold)
+    }
+
+    .sort-item.sort-over {
+      border-top: 2px solid var(--gold)
+    }
+
+    /* Pyramid */
+    .pyramid-game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px
+    }
+
+    .pyr-level {
+      width: 100%;
+      height: 60px;
+      border-radius: 8px;
+      border: 2px dashed var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      background: rgba(0, 0, 0, 0.2)
+    }
+
+    .pyr-level.lv1 {
+      max-width: 150px;
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%)
+    }
+
+    /* Fake visual pyramid */
+    .pyr-level.lv2 {
+      max-width: 250px
+    }
+
+    .pyr-level.lv3 {
+      max-width: 350px
+    }
+
+    .pyr-level.filled {
+      border-style: solid;
+      border-color: var(--gold);
+      background: rgba(212, 168, 67, 0.15);
+      color: var(--gold)
+    }
+
+    /* Feedback */
+    .feedback {
+      padding: 16px 20px;
+      border-radius: 14px;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      display: none;
+      animation: fadeIn 0.4s;
+      text-align: center
+    }
+
+    .feedback.show {
+      display: block
+    }
+
+    .feedback.success {
+      background: rgba(78, 205, 196, 0.1);
+      border: 1px solid rgba(78, 205, 196, 0.3);
+      color: var(--success)
+    }
+
+    .feedback.error {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: var(--error)
+    }
+
+    .feedback.info {
+      background: rgba(212, 168, 67, 0.1);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      color: var(--gold-light)
+    }
+
+    /* === DIPLOMA === */
+    #diploma {
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px
+    }
+
+    .diploma-frame {
+      max-width: 650px;
+      padding: 50px 40px;
+      border: 3px double var(--gold);
+      position: relative
+    }
+
+    .diploma-frame::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      border-radius: 14px;
+      pointer-events: none
+    }
+
+    .diploma-frame h2 {
+      font-family: var(--font-display);
+      color: var(--gold);
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      margin-bottom: 8px
+    }
+
+    .diploma-frame .diploma-sub {
+      font-family: var(--font-heading);
+      color: var(--gold-light);
+      font-size: 1rem;
+      margin-bottom: 25px
+    }
+
+    .diploma-frame .diploma-text {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 20px
+    }
+
+    .diploma-frame .diploma-name {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      color: var(--gold);
+      margin: 20px 0;
+      padding: 10px;
+      border-bottom: 2px solid var(--gold)
+    }
+
+    .diploma-seal {
+      font-size: 3rem;
+      margin: 15px 0
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      25% {
+        transform: translateX(-5px)
+      }
+
+      75% {
+        transform: translateX(5px)
+      }
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 5px rgba(212, 168, 67, 0.3)
+      }
+
+      50% {
+        box-shadow: 0 0 20px rgba(212, 168, 67, 0.5)
+      }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.6s ease forwards
+    }
+
+    .glow {
+      animation: glow 2s ease-in-out infinite
+    }
+
+    /* === NAV BAR === */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 10px 20px;
+      display: none;
+      justify-content: center;
+      gap: 15px;
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(15px);
+      border-top: 1px solid var(--glass-border)
+    }
+
+    .nav-bar.show {
+      display: flex
+    }
+
+    .nav-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      color: var(--gold);
+      border-color: var(--gold);
+      background: rgba(212, 168, 67, 0.1)
+    }
+
+    /* === RESPONSIVE === */
+    @media(max-width:600px) {
+
+      .drop-zones,
+      .match-game {
+        grid-template-columns: 1fr
+      }
+
+      .screen {
+        padding: 15px
+      }
+
+      .game-area,
+      .info-panel {
+        padding: 16px
+      }
+
+      #welcome .museum-gate {
+        padding: 30px 20px
+      }
+
+      body {
+        padding-bottom: 70px
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(212, 168, 67, 0.3);
+      border-radius: 3px
+    }
+
+    .name-input {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: var(--gold);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 20px;
+      outline: none
+    }
+
+    .name-input:focus {
+      border-color: var(--gold)
+    }
+
+    .score-display {
+      font-family: var(--font-heading);
+      color: var(--gold);
+      font-size: 0.9rem;
+      margin: 10px 0
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10
+    }
+
+    /* ====== FOOTER ====== */
+    .museum-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 200;
+      background: linear-gradient(90deg,
+        rgba(10, 5, 25, 0.92) 0%,
+        rgba(30, 15, 60, 0.92) 50%,
+        rgba(10, 5, 25, 0.92) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(212, 168, 67, 0.35);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 -4px 24px rgba(107, 63, 160, 0.25);
+      animation: footerFadeIn 1.2s ease both;
+    }
+
+    @keyframes footerFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .museum-footer .footer-divider {
+      color: rgba(212, 168, 67, 0.45);
+      font-size: 1rem;
+      user-select: none;
+    }
+
+    .museum-footer .footer-icon {
+      font-size: 1.1rem;
+      animation: flickerGold 3s ease-in-out infinite;
+    }
+
+    @keyframes flickerGold {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.6; }
+    }
+
+    .museum-footer .footer-text {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      color: rgba(212, 168, 67, 0.75);
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .museum-footer .footer-text strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .museum-footer .footer-text .footer-ai {
+      color: rgba(180, 140, 255, 0.85);
+      font-style: italic;
+    }
+
+    /* compensate for fixed footer height on all screens */
+    body { padding-bottom: 52px; }
+  </style>
+</head>
+
+<body>
+  <canvas id="particles"></canvas>
+
+  <!-- ====== WELCOME ====== -->
+  <section id="welcome" class="screen active">
+    <div class="museum-gate glass-strong animate-in">
+      <div style="font-size:3.5rem;margin-bottom:15px">🏰</div>
+      <h1>Museo Virtual de la Edad Media</h1>
+      <p class="subtitle">Desafíos Extremos para Jóvenes Curadores</p>
+      <div class="dba-badge"><i class="fas fa-graduation-cap"></i> DBA Ciencias Sociales — Grado 7º</div>
+      <p class="intro">Tu misión: explorar y organizar el museo. Pero cuidado, cada galería ahora tiene <strong>3
+          acertijos lúdicos</strong> que deberás superar para demostrar tu destreza histórica.</p>
+      <input type="text" class="name-input" id="playerName" placeholder="Tu nombre, Curador..." maxlength="30">
+      <br>
+      <button class="btn glow" onclick="startMuseum()"><i class="fas fa-door-open"></i> Entrar al Museo</button>
+    </div>
+  </section>
+
+  <!-- ====== HUB ====== -->
+  <section id="hub" class="screen">
+    <div class="hub-header animate-in">
+      <h2>🏛️ Vestíbulo del Museo</h2>
+      <p class="score-display">Curador: <span id="curatorName">—</span> | Galerías: <span id="completedCount">0</span>/4
+      </p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+    <div class="galleries-grid" id="galleriesGrid"></div>
+    <div id="hubDiplomaBtn" style="margin-top:30px;display:none;text-align:center">
+      <button class="btn btn-success glow" onclick="showDiploma()"><i class="fas fa-award"></i> Gran Diploma de
+        Curador</button>
+    </div>
+  </section>
+
+  <!-- ====== GALLERY ====== -->
+  <section id="gallery-view" class="screen">
+    <button class="btn btn-sm back-btn" onclick="goToHub()"><i class="fas fa-arrow-left"></i> Vestíbulo</button>
+    <div class="gv-header animate-in">
+      <h2 id="gvTitle"></h2>
+      <p id="gvSubtitle"></p>
+    </div>
+    <div class="gv-content" id="gvContent">
+      <div class="info-panel glass animate-in" id="gvInfo"></div>
+      <div class="game-area glass animate-in" id="gameArea">
+        <h3>🎮 Pruebas de Curador (<span id="gvGameCount">0</span>/3)</h3>
+        <div class="games-menu" id="gamesMenu"></div>
+        <div class="game-instruction" id="gameInstr"></div>
+        <div id="gameContentContainer"></div>
+        <div class="feedback" id="gameFeedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== DIPLOMA ====== -->
+  <section id="diploma" class="screen">
+    <div class="diploma-frame glass-strong animate-in">
+      <div class="diploma-seal">🏅</div>
+      <h2>Gran Diploma de Curador Maestro</h2>
+      <p class="diploma-sub">Excelencia en Historia Medieval</p>
+      <p class="diploma-text">Por haber superado los 12 desafíos lúdicos e interactivos, se certifica que</p>
+      <div class="diploma-name" id="diplomaName"></div>
+      <p class="diploma-text">domina la historia del monacato, el feudalismo, la caballería, las cruzadas y el
+        renacimiento de las ciudades.</p>
+      <p class="diploma-date" id="diplomaDate"></p>
+      <br><button class="btn btn-sm" onclick="goToHub()"><i class="fas fa-home"></i> Vestíbulo</button>
+    </div>
+  </section>
+
+  <nav class="nav-bar" id="navBar">
+    <button class="nav-btn" onclick="goToHub()"><i class="fas fa-museum"></i></button>
+  </nav>
+
+  <script>
+    const GALLERIES = [
+      {
+        id: 0, icon: "⛪", title: "El Monasterio y el Feudo", period: "Alta Edad Media",
+        subtitle: "La vida espiritual y terrenal en la Europa dividida.",
+        info: `
+<div class="exhibit-block">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/1-monacato.png" alt="El Monacato: Las Luces de la Oscuridad" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">📜 Monjes copistas en el scriptorium — «Ora et Labora»</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala I · Vida Monástica · Alta Edad Media</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>📜 El Monacato: Las Luces de la Oscuridad</h3>
+    <p>Cuando el Imperio Romano se derrumbó en el siglo V, Europa quedó sumida en el caos. Las ciudades se vaciaron, los caminos se llenaron de peligros y el conocimiento estuvo a punto de perderse para siempre. Fue entonces cuando los <strong>monasterios</strong> se convirtieron en los guardianes de la civilización.</p>
+    <p>San Benito de Nursia (480–547 d.C.) fundó el monasterio de Montecassino y redactó la célebre <em>Regla de San Benito</em>, cuyo lema era: <strong>«Ora et Labora»</strong> (Reza y Trabaja). Los monjes dividían el día en oración, trabajo en los campos y copia de manuscritos.</p>
+    <p>Los <strong>monjes copistas</strong> copiaban a mano textos en hojas de pergamino usando plumas de ave. Una Biblia podía tardar <em>¡hasta dos años en copiarse!</em> Estos <strong>códices iluminados</strong> se decoraban con miniaturas y letras doradas.</p>
+    <p>Los monasterios también eran <strong>hospitales, escuelas y centros agrícolas</strong>: drenaron pantanos, roturaron bosques y crearon molinos de agua. Sin ellos, el conocimiento de Grecia y Roma habría desaparecido.</p>
+  </div>
+</div>
+
+<div class="exhibit-block reverse">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/2-feudalismo.png" alt="El Feudalismo" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">🏰 El homenaje feudal — vasallo arrodillado ante su señor</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala I · Sistema Feudal · Siglos IX–XIII</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>🏰 El Feudalismo: Un Mundo de Juramentos y Tierra</h3>
+    <p>El <strong>Feudalismo</strong> fue el sistema político, económico y social que dominó Europa entre los siglos IX y XIII. Se basaba en la tierra (<strong>feudo</strong>) y los juramentos de lealtad: el <strong>rey</strong> repartía tierras entre <strong>señores feudales</strong>, quienes las cedían a <strong>vasallos y caballeros</strong>. En la base estaban los <strong>siervos y campesinos</strong>, ligados a la tierra.</p>
+    <p>La ceremonia del <strong>homenaje feudal</strong> sellaba el pacto: el vasallo arrodillado prometía fidelidad y recibía un símbolo del feudo —una espada, un guante o un puñado de tierra—. Era un juramento <em>sagrado e inviolable</em>.</p>
+    <ul>
+      <li><strong>Señor Feudal:</strong> Dueño de la tierra, administrador de justicia, cobrador de impuestos.</li>
+      <li><strong>Vasallo:</strong> Guerrero o noble que sirve al señor a cambio del feudo.</li>
+      <li><strong>Siervo de la gleba:</strong> Campesino ligado a la tierra, no podía abandonar el feudo.</li>
+      <li><strong>Villano:</strong> Campesino libre que arrendaba tierras al señor.</li>
+    </ul>
+  </div>
+</div>
+`,
+        games: [
+          {
+            title: "Clasificación", type: "dragdrop", instruction: "Arrastra los términos al grupo correcto.",
+            data: {
+              items: [{ text: "Monjes Copistas", correct: "mon" }, { text: "Juramento de Vasallaje", correct: "feu" }, { text: "Regla de San Benito", correct: "mon" }, { text: "Señor y Siervo", correct: "feu" }],
+              zones: [{ id: "mon", label: "⛪ Monacato" }, { id: "feu", label: "🏰 Feudalismo" }]
+            },
+            fbOk: "¡Perfecto! Has separado la vida monástica de la organización feudal."
+          },
+          {
+            title: "Verdadero/Falso", type: "tf", instruction: "¿Son ciertas estas afirmaciones sobre los monasterios?",
+            data: [
+              { q: "Los monjes copiaban libros usando la primera imprenta.", correct: false, explain: "Falso. La imprenta no existía. Copiaban todo a MANO, lentamente." },
+              { q: "'Ora et Labora' significa reza y trabaja.", correct: true, explain: "Verdadero. Era la regla de San Benito." }
+            ], fbOk: "¡Has refutado los mitos de los monasterios!"
+          },
+          {
+            title: "Pirámide", type: "select", instruction: "Construye la pirámide feudal. ¿Quién va arriba, en medio y abajo?",
+            data: [
+              { q: "Nivel Superior (Poder total):", opts: ["Campesinos", "Rey / Gran Señor", "Caballeros"], correct: 1 },
+              { q: "Nivel Medio (Defensa):", opts: ["Ciervos", "Rey", "Caballeros y Vasallos"], correct: 2 },
+              { q: "Nivel Inferior (Trabajo duro):", opts: ["Campesinos y Siervos", "Monjes", "Reyes"], correct: 0 }
+            ], fbOk: "¡La estructura social de la Edad Media está restaurada!"
+          }
+        ]
+      },
+      {
+        id: 1, icon: "⚔️", title: "La Caballería y el Poder", period: "Alta Edad Media",
+        subtitle: "Honor, castillos y el gran poder de la Iglesia.",
+        info: `
+<div class="exhibit-block">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/3-caballero.png" alt="El Caballero Medieval" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">⚔️ Ceremonia de investidura — el nuevo caballero recibe su espada</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala II · Caballería Medieval · Alta Edad Media</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>⚔️ El Caballero Medieval: Guerrero y Hombre de Honor</h3>
+    <p>El <strong>caballero</strong> era el guardián del orden feudal, instruido en las armas desde niño. Su formación comenzaba a los <strong>7 años</strong> como <em>paje</em>, luego <em>escudero</em> a los 14, hasta la solemne <strong>investidura</strong> entre los 18 y 21 años: le entregaban espada y espuelas doradas.</p>
+    <p>El <strong>Código de Caballería</strong> exigía lealtad, valentía, protección de los débiles y devoción a la Iglesia. Quien lo rompía era deshonrado públicamente: le rompían la espada y arrancaban las espuelas.</p>
+    <p>Los <strong>torneos</strong> eran espectáculos donde los caballeros competían en justas (combate con lanzas) para demostrar habilidad y ganar fama ante nobles y damas.</p>
+  </div>
+</div>
+
+<div class="exhibit-block reverse">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/4-castillos.png" alt="Los Castillos Medievales" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">🏰 Castillo rodeado de foso — última línea de defensa</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala II · Arquitectura Militar · Siglos X–XIII</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>🏰 Los Castillos: Fortalezas de Piedra y Poder</h3>
+    <p>El castillo medieval era centro de poder político, militar y económico. Los primeros eran de madera (<em>motte and bailey</em>), pero pronto se construyeron en piedra con enormes inversiones de trabajo.</p>
+    <p>Un castillo típico contaba con: <strong>foso</strong> (zanja llena de agua), <strong>puente levadizo</strong>, <strong>barbacana</strong>, muros concéntricos, torres de vigilancia y en el centro el <strong>torreón</strong> —último refugio donde vivía el señor y se guardaba el tesoro.</p>
+  </div>
+</div>
+
+<div class="exhibit-block">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/5-iglesia.png" alt="La Iglesia Medieval" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">✝️ El Papa y los reyes — poder espiritual y político reunidos</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala II · Iglesia Católica · Siglos V–XV</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>✝️ La Iglesia: El Gran Poder Espiritual y Político</h3>
+    <p>La <strong>Iglesia Católica</strong> era la institución más poderosa de Europa medieval. El Papa podía <strong>excomulgar</strong> a un rey —quitarle la legitimidad de su gobierno— y aplicar el <strong>interdicto</strong> colectivo sobre sus territorios.</p>
+    <p>Controlaba la educación, la moral pública, el matrimonio y el calendario. Cobraba el <strong>diezmo</strong>, impuesto del 10% de todos los ingresos.</p>
+    <ul>
+      <li><strong>Excomunión:</strong> Sin sacramentos, sin entierro en tierra sagrada.</li>
+      <li><strong>Interdicto:</strong> Castigo colectivo sobre un reino entero.</li>
+      <li><strong>Diezmo:</strong> 10% de toda producción para financiar a la Iglesia.</li>
+    </ul>
+  </div>
+</div>
+`,
+        games: [
+          {
+            title: "Memoria", type: "match", instruction: "Empareja los conceptos con sus significados.",
+            data: {
+              pairs: [
+                { concept: "Castillo", def: "Fortaleza militar y de residencia." },
+                { concept: "Diezmo", def: "Impuesto del 10% para la Iglesia." },
+                { concept: "Torneo", def: "Competencia amistosa de combate." },
+                { concept: "Torreón", def: "Último refugio dentro del castillo." }
+              ]
+            }, fbOk: "¡Dominas la terminología militar y eclesiástica!"
+          },
+          {
+            title: "Dilemas del Caballero", type: "select", instruction: "Toma decisiones éticas basadas en el 'Código de Caballería'.",
+            data: [
+              { q: "Encuentras a un campesino solitario siendo atacado por bandidos. Tú...", opts: ["Huyes rápido.", "Proteges al débil y enfrentas a los bandidos.", "Le cobras oro por salvarlo."], correct: 1 },
+              { q: "Tu Rey te pide que rompas una promesa sagrada para ganar dinero. Tú...", opts: ["Te niegas; el honor y la lealtad van primero.", "Aceptas, el dinero es mejor.", "Traicionas al Rey."], correct: 0 }
+            ], fbOk: "¡Eres un verdadero caballero ejemplar, noble y honorable!"
+          },
+          {
+            title: "Partes de Castillo", type: "quiz-images", instruction: "Adivina la parte defensiva del castillo.",
+            data: [
+              { q: "Soy profundo, lleno de agua o estacas, y evito que lleguen a la muralla. ¿Qué soy?", opts: ["Puente levadizo", "Torreón", "Foso", "Catapulta"], correct: 2 },
+              { q: "Me levantan de noche y me bajan de día cruzando sobre el agua. ¿Qué soy?", opts: ["Foso", "Puente Levadizo", "La muralla", "El torreón"], correct: 1 }
+            ], fbOk: "¡Excelente ingeniero de defensa!"
+          }
+        ]
+      },
+      {
+        id: 2, icon: "🛡️", title: "Las Cruzadas", period: "Baja Edad Media",
+        subtitle: "La guerra que abrió el mundo al comercio y las especias.",
+        info: `
+<div class="exhibit-block">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/6-cruzadas.png" alt="El Llamado a la Guerra Santa" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">✝️ Papa Urbano II en el Concilio de Clermont, 1095 — «¡Dieu le veut!»</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala III · Las Cruzadas · 1096–1270</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>✝️ El Llamado a la Guerra Santa</h3>
+    <p>En <strong>1095</strong>, el Papa <strong>Urbano II</strong> convocó la Primera Cruzada en el Concilio de Clermont para recuperar <strong>Tierra Santa</strong> —Jerusalén— de los turcos selyúcidas. El grito resonó: <em>«¡Dieu le veut!»</em> (<strong>¡Dios lo quiere!</strong>). Miles se cosieron una <strong>cruz roja</strong> en sus ropas: nacieron los <em>cruzados</em>.</p>
+    <p>Hubo <strong>8 Cruzadas mayores</strong> (1096–1270). La Primera tomó Jerusalén en 1099 con enorme violencia. En 1187, el líder musulmán <strong>Saladino</strong> la reconquistó con diplomacia y generosidad —un contraste impactante con los invasores.</p>
+  </div>
+</div>
+
+<div class="exhibit-block reverse">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/7-consecuencias.png" alt="Consecuencias de las Cruzadas" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">🌍 Las rutas comerciales del Mediterráneo — Venecia, Génova, Pisa</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala III · Intercambio Cultural · Baja Edad Media</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>🌍 Las Consecuencias: Un Mundo Transformado</h3>
+    <p>Aunque fueron un fracaso militar, las Cruzadas transformaron Europa para siempre:</p>
+    <ul>
+      <li><strong>Comercio:</strong> Venecia, Génova y Pisa se enriquecieron transportando cruzados y mercancías por el Mediterráneo.</li>
+      <li><strong>Nuevos productos:</strong> Especias (pimienta, canela, clavo), azúcar de caña, seda, algodón y espejos de vidrio.</li>
+      <li><strong>Ciencia árabe:</strong> Álgebra, trigonometría, numeración arábiga y los textos de Aristóteles que Europa había olvidado.</li>
+      <li><strong>Feudalismo debilitado:</strong> Muchos señores vendieron o perdieron sus tierras financiando las campañas.</li>
+      <li><strong>Encuentro cultural:</strong> Los cruzados descubrieron que la civilización árabe era superior en hospitales, arquitectura y bibliotecas.</li>
+    </ul>
+  </div>
+</div>
+`,
+        games: [
+          {
+            title: "Quiz Cruzado", type: "quiz-images", instruction: "Responde sobre el inicio de las Cruzadas.",
+            data: [
+              { q: "¿Qué Papa convocó la primera cruzada gritando '¡Dios lo quiere!'?", opts: ["Urbano II", "Juan Pablo I", "Inocencio III", "Pedro el Ermitaño"], correct: 0 },
+              { q: "¿Cuál era el objetivo principal de la guerra cruzada?", opts: ["Robar tesoros bizantinos", "Cerrar rutas comerciales", "Recuperar los Santos Lugares de Jerusalén", "Destruir barcos vikingos"], correct: 2 }
+            ], fbOk: "¡Has demostrado gran memoria histórica!"
+          },
+          {
+            title: "Ruta Mercantil", type: "multiselect", instruction: "Selecciona TODOS los productos/ideas que llegaron a Europa GRACIAS a las Cruzadas y Oriente.",
+            data: {
+              items: [
+                { text: "Pólvora y Papel", isOk: true }, { text: "Papa y Maíz", isOk: false },
+                { text: "Especias (Canela, Pimienta)", isOk: true }, { text: "Números Arábigos y Álgebra", isOk: true },
+                { text: "Chocolate", isOk: false }, { text: "Seda", isOk: true }
+              ]
+            }, fbOk: "¡Bien hecho! Los productos americanos (papa, maíz) llegaron siglos después. Las Cruzadas trajeron lujos y ciencias de oriente."
+          },
+          {
+            title: "Mitos de Guerra", type: "tf", instruction: "Reconoce la realidad de las Cruzadas.",
+            data: [
+              { q: "Las Cruzadas fortalecieron enormemente a los señores feudales.", correct: false, explain: "Falso: Muchos murieron o se arruinaron gastando en la guerra, debilitando el feudalismo." },
+              { q: "Las Cruzadas abrieron grandes rutas comerciales por el Mediterráneo.", correct: true, explain: "Verdadero: Venecia y Génova se hicieron ricas gracias a esto." }
+            ], fbOk: "Has desmentido un gran mito sobre las consecuencias de las Cruzadas."
+          }
+        ]
+      },
+      {
+        id: 3, icon: "🏙️", title: "El Renacer de las Ciudades", period: "Baja Edad Media",
+        subtitle: "Burgos, universidades y la sombra de la pandemia.",
+        info: `
+<div class="exhibit-block">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/8-burgos.png" alt="Los Burgos Medievales" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">🏙️ Los burgos medievales — el regreso de la vida urbana</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala IV · Vida Urbana · Siglos XI–XIII</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>🏙️ El Despertar Urbano: Los Burgos Medievales</h3>
+    <p>Entre los siglos XI y XIII, Europa vivió un extraordinario <strong>renacimiento urbano</strong>. Las ciudades medievales se llamaban <strong>burgos</strong> (del germánico <em>burg</em>, fortaleza) y sus habitantes, los <strong>burgueses</strong>, formarían la clase media que cambiaría la historia.</p>
+    <p>El aumento de la producción agrícola (arado de hierro, rotación de cultivos) generó excedentes que liberaron mano de obra para los oficios y el comercio. Las <strong>Ferias de Champaña</strong> (Francia) eran el centro comercial de Europa: telas, especias, pieles y vinos de todo el continente.</p>
+  </div>
+</div>
+
+<div class="exhibit-block reverse">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/9-gremios.png" alt="Los Gremios Medievales" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">⚒️ Un herrero medieval — maestro de su gremio</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala IV · Gremios y Oficios · Baja Edad Media</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>⚒️ Los Gremios: La Organización del Trabajo Medieval</h3>
+    <p>Los artesanos se organizaron en <strong>gremios</strong> (corporaciones de oficios) para regular precios, calidad y formación. Un joven pasaba por tres etapas:</p>
+    <ul>
+      <li><strong>Aprendiz:</strong> Vivía con el maestro, aprendía a cambio de techo y comida (5–7 años).</li>
+      <li><strong>Oficial:</strong> Trabajaba por salario para distintos maestros.</li>
+      <li><strong>Maestro:</strong> Presentaba su <em>obra maestra</em> y abría su propio taller.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="exhibit-block">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/10-universidades.png" alt="Las Primeras Universidades" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">📚 Escolástica en París — maestros y estudiantes debatiendo</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala IV · Universidades · Siglo XII</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>📚 Las Primeras Universidades: El Saber Organizado</h3>
+    <p>En el siglo XII nacieron las primeras <strong>universidades</strong>: <em>Bolonia</em> (1088, derecho), <em>París</em> (1150, teología), <em>Oxford</em> (1167). No eran edificios elegantes: maestros y estudiantes se reunían en albergues e iglesias.</p>
+    <p>El método era la <strong>escolástica</strong>: leer un texto de Aristóteles o la Biblia y debatirlo. El objetivo era reconciliar la fe cristiana con la razón griega.</p>
+  </div>
+</div>
+
+<div class="exhibit-block reverse">
+  <div class="exhibit-img-wrap">
+    <div class="exhibit-img-frame">
+      <img src="imagenes/11-peste.png" alt="La Peste Negra" loading="lazy">
+      <div class="exhibit-img-overlay"><span class="exhibit-img-caption">☠️ La Peste Negra (1347–1353) — mató al 30-60% de Europa</span></div>
+    </div>
+    <div class="exhibit-cedula">Sala IV · La Gran Mortandad · 1347–1353</div>
+  </div>
+  <div class="exhibit-text">
+    <h3>☠️ La Peste Negra: La Gran Mortandad (1347–1353)</h3>
+    <p>En octubre de 1347, doce barcos genoveses llegaron a Mesina (Sicilia) con marineros muertos o agonizando: bubones negros —tumores de pus— en axilas e ingles. La <strong>Peste Negra</strong> (<em>Yersinia pestis</em>, transmitida por las pulgas de las ratas) mató entre el <strong>30% y el 60% de la población europea</strong>: 25–50 millones de personas en cinco años.</p>
+    <p>Sus consecuencias: escasez de mano de obra que dio más poder a los campesinos, colapso de la autoridad de la Iglesia —que no pudo explicar ni detener la plaga— y una obsesión cultural con la muerte que marcó el arte de los siglos XIV y XV.</p>
+  </div>
+</div>
+`,
+        games: [
+          {
+            title: "Cronología", type: "sort", instruction: "Ordena los eventos históricos de más antiguo (arriba) a más reciente (abajo).",
+            data: {
+              items: [
+                { text: "Fundación de escuelas catedralicias", order: 0 },
+                { text: "Aparición de las primeras Universidades (París, Bolonia)", order: 1 },
+                { text: "Crecimiento explosivo de las ciudades (burgos)", order: 2 },
+                { text: "Llegada de la Peste Negra por barcos genoveses", order: 3 }
+              ]
+            }, fbOk: "¡El tiempo medieval fluye correctamente gracias a ti!"
+          },
+          {
+            title: "Cazador de Gremios", type: "match", instruction: "Empareja al artesano con el gremio y objeto que produce.",
+            data: {
+              pairs: [
+                { concept: "Herrero", def: "Forja de espadas y herraduras." },
+                { concept: "Tejedor", def: "Telares de lana y lino." },
+                { concept: "Copista", def: "Pergaminos y libros a mano." },
+                { concept: "Carpintero", def: "Muebles y vigas para el burgo." }
+              ]
+            }, fbOk: "¡Los gremios han aprobado tu ingreso al burgo!"
+          },
+          {
+            title: "Supervivencia a la Peste", type: "tf", instruction: "La Peste Negra asola tu ciudad en 1347. Toma decisiones de supervivencia (Mito vs Verdad de la época).",
+            data: [
+              { q: "¿Te bañas con vinagre y quemas ramas de pino olorosas para 'limpiar el aire sucio'?", correct: false, explain: "Esto creían en la época (Teoría miasmática), pero era inútil. ¡Las pulgas de las ratas la transmitían!" },
+              { q: "¿Prohíbes la entrada a barcos forasteros y aíslas la ciudad?", correct: true, explain: "¡Exacto! La cuarentena portuaria (como en Venecia y Ragusa) fue la única medida realista para frenarla." }
+            ], fbOk: "¡Has sobrevivido al Siglo XIV comprendiendo las causas reales de la peste!"
+          }
+        ]
+      }
+    ];
+
+    // STATE MANAGEMENT: state.completed is now an array of arrays tracking game completions
+    let state = {
+      name: '',
+      galleryUnlocked: [true, false, false, false], // G1 open initially
+      galleryGames: [[false, false, false], [false, false, false], [false, false, false], [false, false, false]], // 4 galleries, 3 games each
+      currentGallery: 0, currentGame: 0
+    };
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById('navBar').classList.toggle('show', id !== 'welcome' && id !== 'diploma');
+    }
+
+    function startMuseum() {
+      const name = document.getElementById('playerName').value.trim() || 'Curador Joven';
+      state.name = name; document.getElementById('curatorName').textContent = name;
+      showScreen('hub'); renderHub();
+    }
+
+    function goToHub() { showScreen('hub'); renderHub(); }
+
+    function renderHub() {
+      let fullyDone = 0;
+      state.galleryGames.forEach((games, i) => {
+        const isDone = games.every(Boolean);
+        if (isDone) { fullyDone++; if (i < 3) state.galleryUnlocked[i + 1] = true; } // unlock next
+      });
+
+      document.getElementById('completedCount').textContent = fullyDone;
+      document.getElementById('progressFill').style.width = (fullyDone / 4 * 100) + '%';
+      document.getElementById('hubDiplomaBtn').style.display = fullyDone === 4 ? 'block' : 'none';
+
+      const grid = document.getElementById('galleriesGrid');
+      grid.innerHTML = '';
+      GALLERIES.forEach((g, i) => {
+        const isOpen = state.galleryUnlocked[i];
+        const isDone = state.galleryGames[i].every(Boolean);
+
+        // Calculate games done
+        const gDone = state.galleryGames[i].filter(Boolean).length;
+
+        const card = document.createElement('div');
+        card.className = `gallery-card glass ${isDone ? 'completed' : (!isOpen ? 'locked' : '')} animate-in`;
+        card.style.animationDelay = (i * 0.1) + 's';
+
+        let statusText = isDone ? '✓ Completada' : (!isOpen ? '🔒 Bloqueada' : `En Progreso: ${gDone}/3`);
+        if (isOpen && gDone === 0) statusText = 'Disponible';
+
+        const statusClass = isDone ? 'done-b' : (isOpen ? 'open-b' : 'locked-b');
+
+        card.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>
+      <div class="g-icon">${g.icon}</div><h3>${g.title}</h3><p style="font-size:0.75rem">${g.period}</p>`;
+
+        if (isOpen) card.onclick = () => openGallery(i);
+        grid.appendChild(card);
+      });
+    }
+
+    function openGallery(idx) {
+      state.currentGallery = idx;
+      const g = GALLERIES[idx];
+      showScreen('gallery-view');
+      document.getElementById('gvTitle').innerHTML = `${g.icon} Galería: ${g.title}`;
+      document.getElementById('gvSubtitle').textContent = g.subtitle;
+      document.getElementById('gvInfo').innerHTML = g.info;
+
+      renderGameMenu(idx);
+
+      // Auto open first not-done game, or game 0
+      let gameToOpen = 0;
+      for (let i = 0; i < 3; i++) { if (!state.galleryGames[idx][i]) { gameToOpen = i; break; } }
+      openGame(idx, gameToOpen);
+    }
+
+    function renderGameMenu(gIdx) {
+      const menu = document.getElementById('gamesMenu');
+      menu.innerHTML = '';
+      const games = GALLERIES[gIdx].games;
+      let gamesDone = 0;
+      games.forEach((gm, i) => {
+        const isDone = state.galleryGames[gIdx][i];
+        if (isDone) gamesDone++;
+        const btn = document.createElement('button');
+        btn.className = `game-tab ${isDone ? 'done' : ''}`;
+        btn.innerHTML = `${isDone ? '<i class="fas fa-check-circle"></i>' : ''} Prueba ${i + 1}: ${gm.title}`;
+        btn.onclick = () => openGame(gIdx, i);
+        btn.id = `tab-g${gIdx}-gm${i}`;
+        menu.appendChild(btn);
+      });
+      document.getElementById('gvGameCount').textContent = gamesDone;
+    }
+
+    function openGame(gIdx, gmIdx) {
+      state.currentGame = gmIdx;
+      document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-g${gIdx}-gm${gmIdx}`).classList.add('active');
+
+      const gmData = GALLERIES[gIdx].games[gmIdx];
+      document.getElementById('gameInstr').innerHTML = `<strong>${gmData.title}:</strong> ${gmData.instruction}`;
+      document.getElementById('gameFeedback').className = 'feedback';
+      document.getElementById('gameFeedback').innerHTML = '';
+
+      const gc = document.getElementById('gameContentContainer');
+      gc.innerHTML = '';
+      gc.className = 'animate-in';
+
+      setTimeout(() => {
+        if (gmData.type === 'dragdrop') buildDragDrop(gmData.data, gIdx, gmIdx);
+        else if (gmData.type === 'match') buildMatch(gmData.data, gIdx, gmIdx);
+        else if (gmData.type === 'tf') buildTF(gmData.data, gIdx, gmIdx);
+        else if (gmData.type === 'select' || gmData.type === 'quiz-images') buildSelect(gmData.data, gIdx, gmIdx);
+        else if (gmData.type === 'multiselect') buildMultiSelect(gmData.data, gIdx, gmIdx);
+        else if (gmData.type === 'sort') buildSort(gmData.data, gIdx, gmIdx);
+      }, 50);
+    }
+
+    // ----------------------------------------------------
+    // GAME ENGINES
+    // ----------------------------------------------------
+
+    function handleGameWin(gIdx, gmIdx) {
+      state.galleryGames[gIdx][gmIdx] = true;
+      const fb = document.getElementById('gameFeedback');
+      const txt = GALLERIES[gIdx].games[gmIdx].fbOk;
+      fb.className = 'feedback show success animate-in';
+      fb.innerHTML = `<strong>⭐ ¡Prueba Superada!</strong><br>${txt}`;
+
+      renderGameMenu(gIdx);
+      document.getElementById(`tab-g${gIdx}-gm${gmIdx}`).classList.add('active'); // keep focus formatting
+
+      // Check if all 3 done
+      if (state.galleryGames[gIdx].every(Boolean)) {
+        setTimeout(() => {
+          fb.innerHTML += `<br><br><button class="btn btn-success" onclick="goToHub()">Volver al Vestíbulo (Galería Completada)</button>`;
+        }, 1000);
+      }
+    }
+
+    function buildDragDrop(data, gIdx, gmIdx) {
+      const gc = document.getElementById('gameContentContainer');
+      const itemsStr = shuffle([...data.items]).map((it, i) => `<div class="drag-item" draggable="true" data-i="${i}" data-c="${it.correct}">${it.text}</div>`).join('');
+      const zonesStr = data.zones.map(z => `<div class="drop-zone" data-z="${z.id}"><h4>${z.label}</h4><div class="dropped-items"></div></div>`).join('');
+
+      gc.innerHTML = `<div class="items-grid" id="ddList">${itemsStr}</div><div class="drop-zones">${zonesStr}</div>`;
+
+      let dragged = null, placed = 0;
+      gc.querySelectorAll('.drag-item').forEach(el => {
+        el.addEventListener('dragstart', e => { dragged = el; el.style.opacity = '0.5'; });
+        el.addEventListener('dragend', () => { if (dragged) dragged.style.opacity = '1'; });
+      });
+      gc.querySelectorAll('.drop-zone').forEach(z => {
+        z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('drag-over') });
+        z.addEventListener('dragleave', () => z.classList.remove('drag-over'));
+        z.addEventListener('drop', e => {
+          e.preventDefault(); z.classList.remove('drag-over');
+          if (dragged && dragged.dataset.c === z.dataset.z) {
+            dragged.classList.add('placed');
+            const tag = document.createElement('span'); tag.className = 'dropped-tag'; tag.textContent = dragged.textContent;
+            z.querySelector('.dropped-items').appendChild(tag);
+            placed++; dragged = null;
+            if (placed === data.items.length) handleGameWin(gIdx, gmIdx);
+          } else if (dragged) {
+            const fb = document.getElementById('gameFeedback');
+            fb.className = 'feedback show error'; fb.textContent = '❌ Zona incorrecta. Intenta de nuevo.';
+            setTimeout(() => fb.classList.remove('show'), 1500);
+          }
+        });
+      });
+    }
+
+    function buildMatch(data, gIdx, gmIdx) {
+      const gc = document.getElementById('gameContentContainer');
+      const lhs = data.pairs.map((p, i) => ({ t: p.concept, i, s: 'L' }));
+      const rhs = shuffle(data.pairs.map((p, i) => ({ t: p.def, i, s: 'R' })));
+
+      gc.innerHTML = `<div class="match-game">
+    <div class="match-col">${lhs.map(x => `<div class="match-item interactive-item" data-i="${x.i}" data-s="${x.s}">${x.t}</div>`).join('')}</div>
+    <div class="match-col">${rhs.map(x => `<div class="match-item interactive-item" data-i="${x.i}" data-s="${x.s}">${x.t}</div>`).join('')}</div>
+  </div>`;
+
+      let sel = null, matched = 0;
+      gc.querySelectorAll('.match-item').forEach(el => {
+        el.addEventListener('click', () => {
+          if (el.classList.contains('correct')) return;
+          if (!sel) { sel = el; el.classList.add('selected'); return; }
+          if (sel.dataset.s === el.dataset.s) { sel.classList.remove('selected'); sel = el; el.classList.add('selected'); return; }
+
+          if (sel.dataset.i === el.dataset.i) {
+            sel.classList.replace('selected', 'correct'); el.classList.add('correct');
+            matched++;
+            if (matched === data.pairs.length) handleGameWin(gIdx, gmIdx);
+          } else {
+            sel.classList.replace('selected', 'incorrect'); el.classList.add('incorrect');
+            const asel = sel; setTimeout(() => { asel.classList.remove('incorrect'); el.classList.remove('incorrect'); }, 500);
+          }
+          sel = null;
+        });
+      });
+    }
+
+    function buildTF(data, gIdx, gmIdx) {
+      const gc = document.getElementById('gameContentContainer');
+      let qIdx = 0;
+
+      function render() {
+        if (qIdx >= data.length) { handleGameWin(gIdx, gmIdx); return; }
+        const q = data[qIdx];
+        gc.innerHTML = `<div class="quiz-question"><p>${qIdx + 1}. ${q.q}</p>
+      <div class="tf-grid">
+        <div class="interactive-item tf-btn" data-v="true">Verdadero</div>
+        <div class="interactive-item tf-btn" data-v="false">Falso</div>
+      </div>
+    </div>`;
+        gc.querySelectorAll('.tf-btn').forEach(btn => {
+          btn.onclick = () => {
+            const isTrue = btn.dataset.v === 'true';
+            if (isTrue === q.correct) {
+              btn.classList.add('correct');
+              const fb = document.getElementById('gameFeedback');
+              fb.className = 'feedback show info'; fb.innerHTML = `💡 Correcto.<br>${q.explain || ''}`;
+              setTimeout(() => { fb.className = 'feedback'; qIdx++; render(); }, 2500);
+            } else {
+              btn.classList.add('incorrect');
+              setTimeout(() => btn.classList.remove('incorrect'), 500);
+            }
+          }
+        });
+      }
+      render();
+    }
+
+    function buildSelect(data, gIdx, gmIdx) {
+      const gc = document.getElementById('gameContentContainer');
+      let qIdx = 0;
+      function render() {
+        if (qIdx >= data.length) { handleGameWin(gIdx, gmIdx); return; }
+        const q = data[qIdx];
+        gc.innerHTML = `<div class="quiz-question"><p>${qIdx + 1}. ${q.q}</p>
+      <div class="quiz-options">${q.opts.map((o, i) => `<div class="interactive-item q-opt" data-i="${i}">${o}</div>`).join('')}</div>
+    </div>`;
+        gc.querySelectorAll('.q-opt').forEach(opt => {
+          opt.onclick = () => {
+            if (parseInt(opt.dataset.i) === q.correct) {
+              opt.classList.add('correct');
+              setTimeout(() => { qIdx++; render(); }, 800);
+            } else {
+              opt.classList.add('incorrect');
+              setTimeout(() => opt.classList.remove('incorrect'), 500);
+            }
+          }
+        });
+      }
+      render();
+    }
+
+    function buildMultiSelect(data, gIdx, gmIdx) {
+      const gc = document.getElementById('gameContentContainer');
+      const items = shuffle([...data.items]);
+      gc.innerHTML = `<div class="items-grid" id="msList">
+    ${items.map((it, i) => `<div class="interactive-item ms-opt" data-i="${i}" data-ok="${it.isOk}">${it.text}</div>`).join('')}
+  </div><div style="text-align:center"><button class="btn btn-sm" id="btnMsCheck">Verificar</button></div>`;
+
+      gc.querySelectorAll('.ms-opt').forEach(opt => {
+        opt.onclick = () => opt.classList.toggle('selected');
+      });
+
+      document.getElementById('btnMsCheck').onclick = () => {
+        let allGood = true;
+        gc.querySelectorAll('.ms-opt').forEach(opt => {
+          const isSel = opt.classList.contains('selected');
+          const isOk = opt.dataset.ok === 'true';
+          if (isSel !== isOk) allGood = false;
+          if (isSel && !isOk) opt.classList.add('incorrect'); // bad choice
+          if (!isSel && isOk) opt.style.border = '1px solid var(--error)'; // missed
+        });
+        if (allGood) {
+          gc.querySelectorAll('.ms-opt').forEach(o => { if (o.classList.contains('selected')) o.classList.add('correct') });
+          handleGameWin(gIdx, gmIdx);
+        } else {
+          setTimeout(() => {
+            gc.querySelectorAll('.ms-opt').forEach(o => { o.classList.remove('incorrect'); o.style.border = ''; })
+          }, 1500);
+        }
+      }
+    }
+
+    function buildSort(data, gIdx, gmIdx) {
+      const gc = document.getElementById('gameContentContainer');
+      let items = shuffle([...data.items]);
+
+      function render() {
+        gc.innerHTML = `<div class="sort-items" id="sortList">
+      ${items.map((it, i) => `<div class="sort-item" draggable="true" data-idx="${i}"><i class="fas fa-bars sort-handle"></i> <span>${it.text}</span></div>`).join('')}
+    </div><div style="text-align:center;margin-top:15px"><button class="btn btn-sm" id="btnSortCheck">Revisar Orden cronológico</button></div>`;
+
+        let dragEl = null;
+        const list = document.getElementById('sortList');
+        list.querySelectorAll('.sort-item').forEach(el => {
+          el.addEventListener('dragstart', () => { dragEl = el; el.classList.add('dragging') });
+          el.addEventListener('dragend', () => { el.classList.remove('dragging') });
+          el.addEventListener('dragover', e => { e.preventDefault(); if (dragEl !== el) el.classList.add('sort-over') });
+          el.addEventListener('dragleave', () => el.classList.remove('sort-over'));
+          el.addEventListener('drop', e => {
+            e.preventDefault(); el.classList.remove('sort-over');
+            if (dragEl && dragEl !== el) {
+              list.insertBefore(dragEl, el);
+              // reconstruct arr
+              const newArr = [];
+              list.querySelectorAll('.sort-item').forEach(domEl => {
+                newArr.push(items[parseInt(domEl.dataset.idx)]);
+              });
+              items = newArr; render();
+            }
+          })
+        });
+
+        document.getElementById('btnSortCheck').onclick = () => {
+          let ok = true;
+          for (let i = 0; i < items.length - 1; i++) { if (items[i].order > items[i + 1].order) ok = false; }
+          if (ok) handleGameWin(gIdx, gmIdx);
+          else {
+            const fb = document.getElementById('gameFeedback');
+            fb.className = 'feedback show error'; fb.textContent = '❌ El orden no es completamente correcto. Piensa en qué pasó primero.';
+            setTimeout(() => fb.classList.remove('show'), 2000);
+          }
+        };
+      }
+      render();
+    }
+
+    function showDiploma() {
+      showScreen('diploma');
+      document.getElementById('diplomaName').textContent = state.name;
+      document.getElementById('diplomaDate').textContent = new Date().toLocaleDateString('es-CO');
+    }
+
+    function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+    // Particles
+    (function () {
+      const canvas = document.getElementById('particles'); const ctx = canvas.getContext('2d');
+      let w, h; const particles = [];
+      function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+      resize(); window.addEventListener('resize', resize);
+      for (let i = 0; i < 60; i++) {
+        particles.push({
+          x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2 + 0.5,
+          dx: (Math.random() - 0.5) * 0.3, dy: (Math.random() - 0.5) * 0.3,
+          o: Math.random() * 0.3 + 0.1, c: Math.random() > 0.5 ? '212,168,67' : '107,63,160'
+        });
+      }
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => {
+          p.x += p.dx; p.y += p.dy;
+          if (p.x < 0) p.x = w; if (p.x > w) p.x = 0; if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.c},${p.o})`; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+  </script>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="museum-footer" role="contentinfo">
+    <span class="footer-icon">🏰</span>
+    <span class="footer-divider">|</span>
+    <p class="footer-text">
+      Diseñado y creado por el <strong>Magíster Mario Andrés Marín</strong>
+      &nbsp;·&nbsp; Asistido por <span class="footer-ai">Google Antigravity AI</span>
+      &nbsp;·&nbsp; © 2026 Todos los derechos reservados
+    </p>
+    <span class="footer-divider">|</span>
+    <span class="footer-icon">⚜️</span>
+  </footer>
+
+</body>
+
+</html>
